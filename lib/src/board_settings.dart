@@ -72,16 +72,19 @@ class BoardBorder {
   }
 }
 
+
+
 /// Board settings that controls visual aspects and behavior of the board.
 ///
 /// This is meant for fixed settings that don't change during a game. Sensible
 /// defaults are provided.
 @immutable
-class ChessboardSettings {
-  const ChessboardSettings({
+class ShogiboardSettings {
+  const ShogiboardSettings({
     // theme
-    this.colorScheme = ChessboardColorScheme.brown,
-    this.pieceAssets = PieceSet.cburnettAssets,
+    this.colorScheme = ShogiboardColorScheme.brown,
+    this.pieceAssets = PieceSet.westernStandardAssets,
+    this.shogiType = ShogiType.standard,
     // visual settings
     this.border,
     this.borderRadius = BorderRadius.zero,
@@ -106,10 +109,13 @@ class ChessboardSettings {
     this.autoQueenPromotion = false,
     this.autoQueenPromotionOnPremove = true,
     this.pieceShiftMethod = PieceShiftMethod.either,
+    this.enableDropMoves = false,
   });
 
+  final ShogiType shogiType;
+
   /// Theme of the board
-  final ChessboardColorScheme colorScheme;
+  final ShogiboardColorScheme colorScheme;
 
   /// Piece set
   final PieceAssets pieceAssets;
@@ -175,6 +181,9 @@ class ChessboardSettings {
   /// Controls how moves are made.
   final PieceShiftMethod pieceShiftMethod;
 
+  /// Whether dragging a [Draggable<Piece>] onto the board triggers a [DropMove].
+  final bool enableDropMoves;
+
   /// Shape drawing options object containing data about how new shapes can be drawn.
   final DrawShapeOptions drawShape;
 
@@ -186,10 +195,11 @@ class ChessboardSettings {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is ChessboardSettings &&
+    return other is ShogiboardSettings &&
         other.colorScheme == colorScheme &&
         other.pieceAssets == pieceAssets &&
         other.border == border &&
+        other.shogiType == shogiType &&
         other.borderRadius == borderRadius &&
         other.boxShadow == boxShadow &&
         other.enableCoordinates == enableCoordinates &&
@@ -205,7 +215,8 @@ class ChessboardSettings {
         other.autoQueenPromotion == autoQueenPromotion &&
         other.autoQueenPromotionOnPremove == autoQueenPromotionOnPremove &&
         other.pieceShiftMethod == pieceShiftMethod &&
-        other.drawShape == drawShape;
+        other.drawShape == drawShape &&
+        other.enableDropMoves == enableDropMoves;
   }
 
   @override
@@ -229,10 +240,11 @@ class ChessboardSettings {
     autoQueenPromotionOnPremove,
     pieceShiftMethod,
     drawShape,
+    enableDropMoves,
   );
 
-  ChessboardSettings copyWith({
-    ChessboardColorScheme? colorScheme,
+  ShogiboardSettings copyWith({
+    ShogiboardColorScheme? colorScheme,
     double? brightness,
     double? hue,
     PieceAssets? pieceAssets,
@@ -252,8 +264,9 @@ class ChessboardSettings {
     bool? autoQueenPromotionOnPremove,
     PieceShiftMethod? pieceShiftMethod,
     DrawShapeOptions? drawShape,
+    bool? enableDropMoves,
   }) {
-    return ChessboardSettings(
+    return ShogiboardSettings(
       colorScheme: colorScheme ?? this.colorScheme,
       brightness: brightness ?? this.brightness,
       hue: hue ?? this.hue,
@@ -275,6 +288,7 @@ class ChessboardSettings {
       autoQueenPromotion: autoQueenPromotion ?? this.autoQueenPromotion,
       pieceShiftMethod: pieceShiftMethod ?? this.pieceShiftMethod,
       drawShape: drawShape ?? this.drawShape,
+      enableDropMoves: enableDropMoves ?? this.enableDropMoves,
     );
   }
 }

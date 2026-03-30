@@ -1,70 +1,81 @@
-import 'package:dartchess/dartchess.dart' show Side;
+import 'package:dartshogi/dartshogi.dart' show Side;
 import 'package:flutter/widgets.dart';
+import 'package:shogiground/src/models.dart';
 
 /// Base widget for the background of the chessboard.
 ///
-/// See [SolidColorChessboardBackground] and [ImageChessboardBackground] for concrete implementations.
-abstract class ChessboardBackground extends StatelessWidget {
-  const ChessboardBackground({
+/// See [SolidColorShogiboardBackground] and [ImageShogiboardBackground] for concrete implementations.
+abstract class ShogiboardBackground extends StatelessWidget {
+  const ShogiboardBackground({
     super.key,
     this.coordinates = false,
-    this.orientation = Side.white,
+    this.orientation = Side.sente,
     required this.lightSquare,
     required this.darkSquare,
+    required this.shogiType
   });
 
   final bool coordinates;
   final Side orientation;
   final Color lightSquare;
   final Color darkSquare;
+  final ShogiType shogiType;
 }
 
 /// A chessboard background with solid color squares.
-class SolidColorChessboardBackground extends ChessboardBackground {
-  const SolidColorChessboardBackground({
+class SolidColorShogiboardBackground extends ShogiboardBackground {
+  const SolidColorShogiboardBackground({
     super.key,
     super.coordinates,
     super.orientation,
     required super.lightSquare,
     required super.darkSquare,
+    required super.shogiType
   });
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.infinite,
-      painter: _SolidColorChessboardPainter(
+      painter: _SolidColorShogiboardPainter(
         lightSquare: lightSquare,
         darkSquare: darkSquare,
         coordinates: coordinates,
         orientation: orientation,
+        shogiType: shogiType
       ),
     );
   }
 }
 
-class _SolidColorChessboardPainter extends CustomPainter {
-  _SolidColorChessboardPainter({
+class _SolidColorShogiboardPainter extends CustomPainter {
+  _SolidColorShogiboardPainter({
     required this.lightSquare,
     required this.darkSquare,
     required this.coordinates,
     required this.orientation,
+    required this.shogiType
   });
 
   final Color lightSquare;
   final Color darkSquare;
   final bool coordinates;
   final Side orientation;
+  final ShogiType shogiType;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final squareSize = size.shortestSide / 8;
-    for (var rank = 0; rank < 8; rank++) {
-      for (var file = 0; file < 8; file++) {
+
+    // TODO we have to update here if the type is dobutsu
+    final numberSquaresHorizontally = shogiType.width;
+
+    final squareSize = size.shortestSide / numberSquaresHorizontally;
+    for (var rank = 0; rank < numberSquaresHorizontally; rank++) {
+      for (var file = 0; file < numberSquaresHorizontally; file++) {
         final square = Rect.fromLTWH(file * squareSize, rank * squareSize, squareSize, squareSize);
         final paint = Paint()..color = (rank + file).isEven ? lightSquare : darkSquare;
         canvas.drawRect(square, paint);
-        if (coordinates && (file == 7 || rank == 7)) {
+        if (coordinates && (file == numberSquaresHorizontally - 1 || rank == numberSquaresHorizontally - 1)) {
           final coordStyle = TextStyle(
             inherit: false,
             fontWeight: FontWeight.bold,
@@ -76,7 +87,7 @@ class _SolidColorChessboardPainter extends CustomPainter {
           if (file == 7) {
             final coord = TextPainter(
               text: TextSpan(
-                text: orientation == Side.white ? '${8 - rank}' : '${rank + 1}',
+                text: orientation == Side.sente ? '${numberSquaresHorizontally - 1 - rank}' : '${rank + 1}',
                 style: coordStyle,
               ),
               textDirection: TextDirection.ltr,
@@ -93,7 +104,7 @@ class _SolidColorChessboardPainter extends CustomPainter {
             final coord = TextPainter(
               text: TextSpan(
                 text:
-                    orientation == Side.white
+                    orientation == Side.sente
                         ? String.fromCharCode(97 + file)
                         : String.fromCharCode(97 + 7 - file),
                 style: coordStyle,
@@ -120,14 +131,15 @@ class _SolidColorChessboardPainter extends CustomPainter {
 }
 
 /// A chessboard background made of an image.
-class ImageChessboardBackground extends ChessboardBackground {
-  const ImageChessboardBackground({
+class ImageShogiboardBackground extends ShogiboardBackground {
+  const ImageShogiboardBackground({
     super.key,
     super.coordinates,
     super.orientation,
     required super.lightSquare,
     required super.darkSquare,
     required this.image,
+    required super.shogiType
   });
 
   final AssetImage image;
@@ -147,6 +159,7 @@ class ImageChessboardBackground extends ChessboardBackground {
               lightSquare: lightSquare,
               darkSquare: darkSquare,
               orientation: orientation,
+              shogiType: shogiType
             ),
           ),
         ],
@@ -162,18 +175,23 @@ class _ImageBackgroundCoordinatePainter extends CustomPainter {
     required this.lightSquare,
     required this.darkSquare,
     required this.orientation,
+    required this.shogiType
   });
 
   final Side orientation;
   final Color lightSquare;
   final Color darkSquare;
+  final ShogiType shogiType;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final squareSize = size.shortestSide / 8;
-    for (var rank = 0; rank < 8; rank++) {
-      for (var file = 0; file < 8; file++) {
-        if (file == 7 || rank == 7) {
+
+    final numberSquaresHorizontally = shogiType.width;
+
+    final squareSize = size.shortestSide / numberSquaresHorizontally;
+    for (var rank = 0; rank < numberSquaresHorizontally; rank++) {
+      for (var file = 0; file < numberSquaresHorizontally; file++) {
+        if (file == numberSquaresHorizontally - 1 || rank == numberSquaresHorizontally - 1) {
           final coordStyle = TextStyle(
             inherit: false,
             fontWeight: FontWeight.bold,
@@ -193,7 +211,7 @@ class _ImageBackgroundCoordinatePainter extends CustomPainter {
           if (file == 7) {
             final coord = TextPainter(
               text: TextSpan(
-                text: orientation == Side.white ? '${8 - rank}' : '${rank + 1}',
+                text: orientation == Side.sente ? '${numberSquaresHorizontally - 1 - rank}' : '${rank + 1}',
                 style: coordStyle,
               ),
               textDirection: TextDirection.ltr,
@@ -210,7 +228,7 @@ class _ImageBackgroundCoordinatePainter extends CustomPainter {
             final coord = TextPainter(
               text: TextSpan(
                 text:
-                    orientation == Side.white
+                    orientation == Side.sente
                         ? String.fromCharCode(97 + file)
                         : String.fromCharCode(97 + 7 - file),
                 style: coordStyle,

@@ -1,36 +1,36 @@
-import 'package:chessground/chessground.dart';
+// import 'package:shogiground/shogiground.dart';
 
-/// The chessboard theme.
-enum BoardTheme {
-  blue('Blue', ChessboardColorScheme.blue),
-  blue2('Blue2', ChessboardColorScheme.blue2),
-  blue3('Blue3', ChessboardColorScheme.blue3),
-  blueMarble('Blue Marble', ChessboardColorScheme.blueMarble),
-  canvas('Canvas', ChessboardColorScheme.canvas),
-  wood('Wood', ChessboardColorScheme.wood),
-  wood2('Wood2', ChessboardColorScheme.wood2),
-  wood3('Wood3', ChessboardColorScheme.wood3),
-  wood4('Wood4', ChessboardColorScheme.wood4),
-  maple('Maple', ChessboardColorScheme.maple),
-  maple2('Maple 2', ChessboardColorScheme.maple2),
-  brown('Brown', ChessboardColorScheme.brown),
-  leather('Leather', ChessboardColorScheme.leather),
-  ic('IC', ChessboardColorScheme.ic),
-  green('Green', ChessboardColorScheme.green),
-  marble('Marble', ChessboardColorScheme.marble),
-  greenPlastic('Green Plastic', ChessboardColorScheme.greenPlastic),
-  grey('Grey', ChessboardColorScheme.grey),
-  metal('Metal', ChessboardColorScheme.metal),
-  olive('Olive', ChessboardColorScheme.olive),
-  newspaper('Newspaper', ChessboardColorScheme.newspaper),
-  purple('Purple', ChessboardColorScheme.purple),
-  purpleDiag('Purple-Diag', ChessboardColorScheme.purpleDiag),
-  pinkPyramid('Pink', ChessboardColorScheme.pinkPyramid),
-  horsey('Horsey', ChessboardColorScheme.horsey);
+// /// The chessboard theme.
+// enum BoardTheme {
+//   blue('Blue', ShogiboardColorScheme.blue),
+//   blue2('Blue2', ShogiboardColorScheme.blue2),
+//   blue3('Blue3', ShogiboardColorScheme.blue3),
+//   blueMarble('Blue Marble', ShogiboardColorScheme.blueMarble),
+//   canvas('Canvas', ShogiboardColorScheme.canvas),
+//   wood('Wood', ShogiboardColorScheme.wood),
+//   wood2('Wood2', ShogiboardColorScheme.wood2),
+//   wood3('Wood3', ShogiboardColorScheme.wood3),
+//   wood4('Wood4', ShogiboardColorScheme.wood4),
+//   maple('Maple', ShogiboardColorScheme.maple),
+//   maple2('Maple 2', ShogiboardColorScheme.maple2),
+//   brown('Brown', ShogiboardColorScheme.brown),
+//   leather('Leather', ShogiboardColorScheme.leather),
+//   ic('IC', ShogiboardColorScheme.ic),
+//   green('Green', ShogiboardColorScheme.green),
+//   marble('Marble', ShogiboardColorScheme.marble),
+//   greenPlastic('Green Plastic', ShogiboardColorScheme.greenPlastic),
+//   grey('Grey', ShogiboardColorScheme.grey),
+//   metal('Metal', ShogiboardColorScheme.metal),
+//   olive('Olive', ShogiboardColorScheme.olive),
+//   newspaper('Newspaper', ShogiboardColorScheme.newspaper),
+//   purple('Purple', ShogiboardColorScheme.purple),
+//   purpleDiag('Purple-Diag', ShogiboardColorScheme.purpleDiag),
+//   pinkPyramid('Pink', ShogiboardColorScheme.pinkPyramid),
+//   horsey('Horsey', ShogiboardColorScheme.horsey);
 
-  final String label;
+//   final String label;
 
-  final ChessboardColorScheme colors;
+//   final ShogiboardColorScheme colors;
 
-  const BoardTheme(this.label, this.colors);
-}
+//   const BoardTheme(this.label, this.colors);
+// }

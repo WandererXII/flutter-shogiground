@@ -1,5 +1,6 @@
-import 'package:dartchess/dartchess.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shogiground/src/models.dart';
 
 import '../board_settings.dart';
 import 'geometry.dart';
@@ -19,13 +20,14 @@ const _coordStyle = TextStyle(
 /// This widget displays a chessboard with a border around it.
 ///
 /// In order to not display the coordinates twice, it is the responsibility of
-/// the parent widget to remove coordinates in the wrapped [Chessboard].
-class BorderedChessboard extends StatelessWidget with ChessboardGeometry {
-  const BorderedChessboard({
+/// the parent widget to remove coordinates in the wrapped [Shogiboard].
+class BorderedShogiboard extends StatelessWidget with ShogiboardGeometry {
+  const BorderedShogiboard({
     required this.size,
     required this.orientation,
     required this.border,
     required this.child,
+    required this.shogiType,
     this.showCoordinates = true,
     super.key,
   });
@@ -39,11 +41,14 @@ class BorderedChessboard extends StatelessWidget with ChessboardGeometry {
   /// The border of the board.
   final BoardBorder border;
 
-  /// The board child widget. Typically a [Chessboard].
+  /// The board child widget. Typically a [Shogiboard].
   final Widget child;
 
   /// Whether to show coordinates on the border.
   final bool showCoordinates;
+
+  @override
+  final ShogiType shogiType;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +68,7 @@ class BorderedChessboard extends StatelessWidget with ChessboardGeometry {
                 orientation: orientation,
                 width: border.width,
                 height: size,
+                shogiType: shogiType,
               ),
             ),
           if (showCoordinates)
@@ -81,21 +87,31 @@ class BorderedChessboard extends StatelessWidget with ChessboardGeometry {
   }
 }
 
-/// A widget that displays the rank coordinates of a chess board.
+/// A widget that displays the rank coordinates of a shogi board.
 class _BorderRankCoordinates extends StatelessWidget {
   const _BorderRankCoordinates({
     required this.orientation,
     required this.width,
     required this.height,
+    required this.shogiType
   });
 
   final Side orientation;
   final double width;
   final double height;
+  final ShogiType shogiType;
+
+  String buildRanks(ShogiType type, Side orientation) {
+  final range = List.generate(type.height, (i) => i + 1);
+
+  return (orientation == Side.sente)
+      ? range.reversed.join()
+      : range.join();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ranks = orientation == Side.white ? '87654321' : '12345678';
+    final ranks = buildRanks(shogiType, Side.sente);
     return SizedBox(
       width: width,
       height: height,
@@ -119,7 +135,7 @@ class _BorderRankCoordinates extends StatelessWidget {
   }
 }
 
-/// A widget that displays the file coordinates of a chess board.
+/// A widget that displays the file coordinates of a shogi board.
 class _BorderFileCoordinates extends StatelessWidget {
   const _BorderFileCoordinates({
     required this.orientation,
@@ -133,7 +149,7 @@ class _BorderFileCoordinates extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final files = orientation == Side.white ? 'abcdefgh' : 'hgfedcba';
+    final files = orientation == Side.sente ? '123456789' : '987654321';
     return SizedBox(
       height: height,
       width: width,

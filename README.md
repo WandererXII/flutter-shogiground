@@ -25,7 +25,7 @@ chess logic so you can use it with different chess variants.
 
 This package exports a `Chessboard` widget which can be interactable or not.
 
-It is configurable with a `ChessboardSettings` object which defines the board
+It is configurable with a `ShogiboardSettings` object which defines the board
 behavior and appearance.
 
 To interact with the board in order to play a game, you must provide a `GameData`
@@ -43,8 +43,8 @@ default theme:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:chessground/chessground.dart';
-import 'package:dartchess/dartchess.dart';
+import 'package:shogiground/shogiground.dart';
+import 'package:dartshogi/dartshogi.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Chessground demo'),
       ),
       body: Center(
-        child: Chessboard.fixed(
+        child: Shogiboard.fixed(
           size: screenWidth,
           orientation: Side.white,
           fen: fen,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:chessground/src/widgets/animation.dart';
-import 'package:dartchess/dartchess.dart';
+import 'package:shogiground/src/widgets/animation.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import '../board_color_scheme.dart';
@@ -23,16 +23,17 @@ import 'positioned_square.dart';
 ///
 /// The [fen] property is used to describe the position of the board.
 /// Pass a new FEN to update the board position. The board will animate the pieces to their new positions.
-class StaticChessboard extends StatefulWidget with ChessboardGeometry {
-  const StaticChessboard({
+class StaticShogiboard extends StatefulWidget with ShogiboardGeometry {
+  const StaticShogiboard({
     required this.size,
+    required this.shogiType,
     required this.orientation,
     required this.fen,
     this.lastMove,
-    this.colorScheme = ChessboardColorScheme.brown,
+    this.colorScheme = ShogiboardColorScheme.brown,
     this.brightness = 1.0,
     this.hue = 0.0,
-    this.pieceAssets = PieceSet.stauntyAssets,
+    this.pieceAssets = PieceSet.westernStandardAssets,
     this.borderRadius = BorderRadius.zero,
     this.boxShadow = const <BoxShadow>[],
     this.enableCoordinates = false,
@@ -44,6 +45,9 @@ class StaticChessboard extends StatefulWidget with ChessboardGeometry {
   @override
   final double size;
 
+  @override
+  final ShogiType shogiType;
+
   /// Side by which the board is oriented.
   @override
   final Side orientation;
@@ -52,10 +56,10 @@ class StaticChessboard extends StatefulWidget with ChessboardGeometry {
   final String fen;
 
   /// Last move played, used to highlight corresponding squares.
-  final Move? lastMove;
+  final MoveOrDrop? lastMove;
 
   /// Theme of the board
-  final ChessboardColorScheme colorScheme;
+  final ShogiboardColorScheme colorScheme;
 
   /// Brightness adjustment of the board
   final double brightness;
@@ -79,10 +83,10 @@ class StaticChessboard extends StatefulWidget with ChessboardGeometry {
   final Duration animationDuration;
 
   @override
-  State<StaticChessboard> createState() => _StaticChessboardState();
+  State<StaticShogiboard> createState() => _StaticShogiboardState();
 }
 
-class _StaticChessboardState extends State<StaticChessboard> {
+class _StaticShogiboardState extends State<StaticShogiboard> {
   bool deferImagesLoading = false;
 
   /// Pieces on the board.
@@ -103,7 +107,7 @@ class _StaticChessboardState extends State<StaticChessboard> {
   }
 
   @override
-  void didUpdateWidget(covariant StaticChessboard oldWidget) {
+  void didUpdateWidget(covariant StaticShogiboard oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.fen == widget.fen) {
@@ -147,7 +151,7 @@ class _StaticChessboardState extends State<StaticChessboard> {
   Widget build(BuildContext context) {
     final background =
         widget.enableCoordinates
-            ? widget.orientation == Side.white
+            ? widget.orientation == Side.sente
                 ? widget.colorScheme.whiteCoordBackground
                 : widget.colorScheme.blackCoordBackground
             : widget.colorScheme.background;
@@ -163,6 +167,7 @@ class _StaticChessboardState extends State<StaticChessboard> {
             size: widget.size,
             orientation: widget.orientation,
             square: square,
+            shogiType: widget.shogiType,
             child: SquareHighlight(details: widget.colorScheme.lastMove),
           ),
     ];
@@ -189,6 +194,7 @@ class _StaticChessboardState extends State<StaticChessboard> {
                 size: widget.size,
                 orientation: widget.orientation,
                 square: entry.key,
+                shogiType: widget.shogiType,
                 child: AnimatedPieceFadeOut(
                   duration: widget.animationDuration,
                   piece: entry.value,
@@ -208,6 +214,7 @@ class _StaticChessboardState extends State<StaticChessboard> {
                   size: widget.size,
                   orientation: widget.orientation,
                   square: entry.key,
+                  shogiType: widget.shogiType, 
                   child: PieceWidget(
                     piece: entry.value,
                     size: widget.squareSize,
@@ -220,6 +227,7 @@ class _StaticChessboardState extends State<StaticChessboard> {
                 size: widget.size,
                 orientation: widget.orientation,
                 square: entry.key,
+                shogiType: widget.shogiType,
                 child: AnimatedPieceTranslation(
                   fromSquare: entry.value.from,
                   toSquare: entry.key,

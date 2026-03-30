@@ -1,5 +1,5 @@
-import 'package:chessground/src/widgets/geometry.dart';
-import 'package:dartchess/dartchess.dart';
+import 'package:shogiground/src/widgets/geometry.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
 import '../models.dart';
 import 'piece.dart';
@@ -8,9 +8,9 @@ import 'piece.dart';
 ///
 /// This widget should be displayed when a pawn reaches the last rank and must be
 /// promoted. The user can select a piece to promote to by tapping on one of
-/// the pieces displayed in the widget. Normally there are 4 pieces to choose from (queen, rook, bishop and knight), but a king can also be included as an option if `canPromoteToKing` is true (for example in Antichess).
+/// the four pieces displayed.
 /// Promotion can be canceled by tapping outside the promotion widget.
-class PromotionSelector extends StatelessWidget with ChessboardGeometry {
+class PromotionSelector extends StatelessWidget with ShogiboardGeometry {
   const PromotionSelector({
     super.key,
     required this.move,
@@ -21,7 +21,7 @@ class PromotionSelector extends StatelessWidget with ChessboardGeometry {
     required this.onSelect,
     required this.onCancel,
     required this.pieceAssets,
-    required this.canPromoteToKing,
+    required this.shogiType
   });
 
   /// The move that is being promoted.
@@ -32,9 +32,6 @@ class PromotionSelector extends StatelessWidget with ChessboardGeometry {
 
   /// The piece assets to use.
   final PieceAssets pieceAssets;
-
-  /// Whether the pawn can be promoted to a king (possible for example in Antichess).
-  final bool canPromoteToKing;
 
   @override
   final double size;
@@ -51,37 +48,37 @@ class PromotionSelector extends StatelessWidget with ChessboardGeometry {
   /// Callback when the promotion is canceled.
   final void Function() onCancel;
 
+  final ShogiType shogiType;
+
   /// The square the pawn is moving to.
   Square get square => move.to;
 
   @override
   Widget build(BuildContext context) {
-    final isPromotionSquareAtTop =
-        orientation == Side.white && square.rank == Rank.eighth ||
-        orientation == Side.black && square.rank == Rank.first;
-
-    final topRoles = [
-      Role.queen,
-      Role.knight,
-      Role.rook,
-      Role.bishop,
-      if (canPromoteToKing) Role.king,
-    ];
-
-    final roles = isPromotionSquareAtTop ? topRoles : topRoles.reversed.toList(growable: false);
-    final pieces = roles
-        .map((role) => Piece(color: color, role: role, promoted: true))
-        .toList(growable: false);
-
+    final isInPromotionZone = shogiType.entersPromotionZone(square, orientation);
+    
     final anchorSquare =
-        isPromotionSquareAtTop
+        isInPromotionZone
             ? square
-            : Square.fromCoords(
-              square.file,
-              orientation == Side.white
-                  ? (pieces.length == 4 ? Rank.fourth : Rank.fifth)
-                  : (pieces.length == 4 ? Rank.fifth : Rank.fourth),
-            );
+            : Square.fromCoords(square.file, orientation == Side.sente ? Rank.rankD : Rank.rankE);
+    final List<Piece> pieces = [];
+
+    // final pieces =
+    //     isPromotionSquareAtTop
+    //         ? [
+    //           Piece(color: color, role: Role.queen, promoted: true),
+    //           Piece(color: color, role: Role.knight, promoted: true),
+    //           Piece(color: color, role: Role.rook, promoted: true),
+    //           Piece(color: color, role: Role.bishop, promoted: true),
+    //         ]
+    //         : [
+    //           Piece(color: color, role: Role.bishop, promoted: true),
+    //           Piece(color: color, role: Role.rook, promoted: true),
+    //           Piece(color: color, role: Role.knight, promoted: true),
+    //           Piece(color: color, role: Role.queen, promoted: true),
+    //         ];
+    // final isPromotionAvailable = shogiType.isInPromotionZone(square, orientation);
+
 
     final offset = squareOffset(anchorSquare);
 
@@ -96,7 +93,7 @@ class PromotionSelector extends StatelessWidget with ChessboardGeometry {
           children: [
             Positioned(
               width: squareSize,
-              height: squareSize * pieces.length,
+              height: squareSize * 4,
               left: offset.dx,
               top: offset.dy,
               child: Column(

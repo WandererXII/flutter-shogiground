@@ -1,11 +1,11 @@
 import 'dart:ui' as ui;
 
-import 'package:chessground/chessground.dart';
+import 'package:shogiground/shogiground.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-ChessgroundImages get _cache => ChessgroundImages.instance;
+ShogigroundImages get _cache => ShogigroundImages.instance;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

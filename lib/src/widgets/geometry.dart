@@ -1,21 +1,28 @@
-import 'package:dartchess/dartchess.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shogiground/shogiground.dart';
 
-/// A mixin that provides geometry information about the chessboard.
-mixin ChessboardGeometry {
+/// A mixin that provides geometry information about the shogiboard.
+mixin ShogiboardGeometry {
   /// Visual size of the board.
   double get size;
 
   /// Side by which the board is oriented.
   Side get orientation;
 
+  //ShogiType to calculate board geometry
+  ShogiType get shogiType;
+
   /// Size of a single square on the board.
-  double get squareSize => size / 8;
+  double get squareSize => size / shogiType.width;
 
   /// Converts a square to a board offset.
   Offset squareOffset(Square square) {
-    final x = orientation == Side.black ? 7 - square.file : square.file;
-    final y = orientation == Side.black ? square.rank : 7 - square.rank;
+    int x, y;
+    x = orientation == Side.gote ? shogiType.width - square.file : square.file;
+    y = orientation == Side.gote ? square.rank : shogiType.height - square.rank;
+    
+
     return Offset(x * squareSize, y * squareSize);
   }
 
@@ -25,9 +32,9 @@ mixin ChessboardGeometry {
   Square? offsetSquare(Offset offset) {
     final x = (offset.dx / squareSize).floor();
     final y = (offset.dy / squareSize).floor();
-    final orientX = orientation == Side.black ? 7 - x : x;
-    final orientY = orientation == Side.black ? y : 7 - y;
-    if (orientX >= 0 && orientX <= 7 && orientY >= 0 && orientY <= 7) {
+    final orientX = orientation == Side.gote ? shogiType.width - 1 - x : x;
+    final orientY = orientation == Side.gote ? y : shogiType.height - 1 - y;
+    if (orientX >= 0 && orientX <= shogiType.width - 1 && orientY >= 0 && orientY <= shogiType.height - 1) {
       return Square.fromCoords(File(orientX), Rank(orientY));
     } else {
       return null;

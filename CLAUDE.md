@@ -25,15 +25,15 @@ All public exports go through `lib/chessground.dart`. Internal implementation li
 
 ### Three Board Widgets
 
-- **`Chessboard`** (`src/widgets/board.dart`) — Main interactive board. Two constructors: `Chessboard()` for interactive play (requires `GameData`) and `Chessboard.fixed()` for non-interactive display with animations.
-- **`StaticChessboard`** (`src/widgets/static_board.dart`) — Read-only board optimized for scrollable contexts (uses deferred loading).
+- **`Chessboard`** (`src/widgets/board.dart`) — Main interactive board. Two constructors: `Shogiboard()` for interactive play (requires `GameData`) and `Shogiboard.fixed()` for non-interactive display with animations.
+- **`StaticShogiboard`** (`src/widgets/static_board.dart`) — Read-only board optimized for scrollable contexts (uses deferred loading).
 - **`ChessboardEditor`** (`src/widgets/board_editor.dart`) — Position editor with drag and edit pointer modes.
 
 ### Core Data Flow
 
 The board is driven by immutable data objects:
 - **`GameData`** — Holds game state (side to move, valid moves, premove state) and callbacks (`onMove`, `onPremove`). Any game state change requires creating a new `GameData` instance.
-- **`ChessboardSettings`** — All visual and behavioral configuration (theme, animations, piece shift method, draw shapes, coordinates, etc.).
+- **`ShogiboardSettings`** — All visual and behavioral configuration (theme, animations, piece shift method, draw shapes, coordinates, etc.).
 - **`Pieces`** (`Map<Square, Piece>`) — Board position, typically derived from FEN via `readFen()`.
 
 ### Shape System

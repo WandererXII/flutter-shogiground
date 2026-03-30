@@ -1,32 +1,32 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chessground/chessground.dart';
+import 'package:shogiground/shogiground.dart';
 
 void main() {
-  group('ChessboardSettings', () {
+  group('ShogiboardSettings', () {
     test('implements hashCode/==', () {
-      expect(const ChessboardSettings(), const ChessboardSettings());
-      expect(const ChessboardSettings().hashCode, const ChessboardSettings().hashCode);
+      expect(const ShogiboardSettings(), const ShogiboardSettings());
+      expect(const ShogiboardSettings().hashCode, const ShogiboardSettings().hashCode);
 
       expect(
-        const ChessboardSettings(),
-        isNot(const ChessboardSettings(colorScheme: ChessboardColorScheme.blue)),
+        const ShogiboardSettings(),
+        isNot(const ShogiboardSettings(colorScheme: ShogiboardColorScheme.brown)),
       );
     });
 
     test('copyWith', () {
-      expect(const ChessboardSettings().copyWith(), const ChessboardSettings());
+      expect(const ShogiboardSettings().copyWith(), const ShogiboardSettings());
 
       expect(
-        const ChessboardSettings().copyWith(colorScheme: ChessboardColorScheme.blue).colorScheme,
-        ChessboardColorScheme.blue,
+        const ShogiboardSettings().copyWith(colorScheme: ShogiboardColorScheme.brown).colorScheme,
+        ShogiboardColorScheme.brown,
       );
 
       expect(
-        const ChessboardSettings(
+        const ShogiboardSettings(
           border: BoardBorder(color: Color(0xFFFFFFFF), width: 16.0),
         ).copyWith(),
-        const ChessboardSettings(border: BoardBorder(color: Color(0xFFFFFFFF), width: 16.0)),
+        const ShogiboardSettings(border: BoardBorder(color: Color(0xFFFFFFFF), width: 16.0)),
       );
     });
   });

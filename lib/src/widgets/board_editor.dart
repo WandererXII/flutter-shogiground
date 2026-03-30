@@ -1,5 +1,5 @@
-import 'package:chessground/src/widgets/geometry.dart';
-import 'package:dartchess/dartchess.dart';
+import 'package:shogiground/src/widgets/geometry.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/widgets.dart';
 
@@ -38,14 +38,15 @@ enum EditorPointerMode {
 ///
 /// A [writeFen] method is provided by this package to convert the current state
 /// of the board editor to a FEN string.
-class ChessboardEditor extends StatefulWidget with ChessboardGeometry {
-  const ChessboardEditor({
+class ShogiboardEditor extends StatefulWidget with ShogiboardGeometry {
+  const ShogiboardEditor({
     super.key,
     required double size,
     required this.orientation,
     required this.pieces,
+    required this.shogiType,
     this.pointerMode = EditorPointerMode.drag,
-    this.settings = const ChessboardSettings(),
+    this.settings = const ShogiboardSettings(),
     this.squareHighlights = const IMap.empty(),
     this.onEditedSquare,
     this.onDroppedPiece,
@@ -60,6 +61,9 @@ class ChessboardEditor extends StatefulWidget with ChessboardGeometry {
   @override
   final Side orientation;
 
+  @override
+  final ShogiType shogiType;
+
   /// The pieces to display on the board.
   ///
   /// This is read-only, it will never be modified by the board editor.
@@ -68,7 +72,7 @@ class ChessboardEditor extends StatefulWidget with ChessboardGeometry {
   final Pieces pieces;
 
   /// Settings that control the appearance of the board editor.
-  final ChessboardSettings settings;
+  final ShogiboardSettings settings;
 
   /// The current mode of the pointer tool.
   final EditorPointerMode pointerMode;
@@ -100,19 +104,25 @@ class ChessboardEditor extends StatefulWidget with ChessboardGeometry {
   /// This is active only when [pointerMode] is [EditorPointerMode.drag].
   final void Function(Square square)? onDiscardedPiece;
 
+
+
   @override
-  State<ChessboardEditor> createState() => _BoardEditorState();
+  State<ShogiboardEditor> createState() => _BoardEditorState();
 }
 
-class _BoardEditorState extends State<ChessboardEditor> {
+class _BoardEditorState extends State<ShogiboardEditor> {
   Square? draggedPieceOrigin;
   bool _isPanning = false;
   Square? _lastEditedSquare;
+  ShogiType shogiType = ShogiType.standard;
 
   @override
   Widget build(BuildContext context) {
+
+    final squares = shogiType.generateSquares();
+
     final List<Widget> squareWidgets =
-        Square.values.map((square) {
+        squares.map((square) {
           final piece = widget.pieces[square];
 
           return PositionedSquare(
@@ -120,6 +130,7 @@ class _BoardEditorState extends State<ChessboardEditor> {
             size: widget.size,
             orientation: widget.orientation,
             square: square,
+            shogiType: shogiType,
             child: DragTarget<Piece>(
               hitTestBehavior: HitTestBehavior.opaque,
               builder: (context, candidateData, rejectedData) {
@@ -181,7 +192,7 @@ class _BoardEditorState extends State<ChessboardEditor> {
       hue: widget.settings.hue,
       child:
           widget.settings.border == null && widget.settings.enableCoordinates
-              ? widget.orientation == Side.white
+              ? widget.orientation == Side.sente
                   ? widget.settings.colorScheme.whiteCoordBackground
                   : widget.settings.colorScheme.blackCoordBackground
               : widget.settings.colorScheme.background,
@@ -195,6 +206,7 @@ class _BoardEditorState extends State<ChessboardEditor> {
           size: widget.size,
           orientation: widget.orientation,
           square: square,
+          shogiType: shogiType,
           child: highlight,
         ),
     ];
@@ -230,18 +242,19 @@ class _BoardEditorState extends State<ChessboardEditor> {
       ),
     );
 
-    final borderedChessboard =
+    final borderedShogiboard =
         widget.settings.border != null
-            ? BorderedChessboard(
+            ? BorderedShogiboard(
               size: widget.size,
               orientation: widget.orientation,
               border: widget.settings.border!,
+              shogiType: shogiType,
               showCoordinates: widget.settings.enableCoordinates,
               child: board,
             )
             : board;
 
-    return BrightnessHueFilter(brightness: widget.settings.brightness, child: borderedChessboard);
+    return BrightnessHueFilter(brightness: widget.settings.brightness, child: borderedShogiboard);
   }
 
   void _onTapEvent(Offset localPosition) {

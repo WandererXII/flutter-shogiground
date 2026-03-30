@@ -1,4 +1,4 @@
-import 'package:dartchess/dartchess.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
 import '../models.dart';
 import './piece.dart';
@@ -17,48 +17,55 @@ typedef FadingPieces = Map<Square, Piece>;
 (TranslatingPieces, FadingPieces) preparePieceAnimations(
   Pieces oldPosition,
   Pieces newPosition, {
-  Move? lastDrop,
+  MoveOrDrop? lastDrop,
+  ShogiType? shogiType
 }) {
   final Map<Square, ({Piece piece, Square from})> translatingPieces = {};
   final Map<Square, Piece> fadingPieces = {};
   final List<(Piece, Square)> newOnSquare = [];
   final List<(Piece, Square)> missingOnSquare = [];
   final Set<Square> animatedOrigins = {};
-  for (final s in Square.values) {
-    if ((lastDrop is NormalMove && s == lastDrop.from) || s == lastDrop?.to) {
-      continue;
-    }
-    final oldP = oldPosition[s];
-    final newP = newPosition[s];
-    if (newP != null) {
-      if (oldP != null) {
-        if (newP != oldP) {
-          missingOnSquare.add((oldP, s));
+
+  final squares = shogiType?.generateSquares();
+  if (squares != null){
+    for (final s in squares) {
+      if ((lastDrop is NormalMove && s == lastDrop.from) || s == lastDrop?.to) {
+        continue;
+      }
+      final oldP = oldPosition[s];
+      final newP = newPosition[s];
+      if (newP != null) {
+        if (oldP != null) {
+          if (newP != oldP) {
+            missingOnSquare.add((oldP, s));
+            newOnSquare.add((newP, s));
+          }
+        } else {
           newOnSquare.add((newP, s));
         }
-      } else {
-        newOnSquare.add((newP, s));
+      } else if (oldP != null) {
+        missingOnSquare.add((oldP, s));
       }
-    } else if (oldP != null) {
-      missingOnSquare.add((oldP, s));
+    }
+    for (final (newPiece, newPieceSquare) in newOnSquare) {
+      // find the closest square that the piece was on before
+      final fromSquare = _closestSquare(
+        newPieceSquare,
+        missingOnSquare.where((m) => m.$1 == newPiece).map((e) => e.$2),
+      );
+      if (fromSquare != null) {
+        translatingPieces[newPieceSquare] = (piece: newPiece, from: fromSquare);
+        animatedOrigins.add(fromSquare);
+      }
+    }
+    for (final (missingPiece, missingPieceSquare) in missingOnSquare) {
+      if (!animatedOrigins.contains(missingPieceSquare)) {
+        fadingPieces[missingPieceSquare] = missingPiece;
+      }
     }
   }
-  for (final (newPiece, newPieceSquare) in newOnSquare) {
-    // find the closest square that the piece was on before
-    final fromSquare = _closestSquare(
-      newPieceSquare,
-      missingOnSquare.where((m) => m.$1 == newPiece).map((e) => e.$2),
-    );
-    if (fromSquare != null) {
-      translatingPieces[newPieceSquare] = (piece: newPiece, from: fromSquare);
-      animatedOrigins.add(fromSquare);
-    }
-  }
-  for (final (missingPiece, missingPieceSquare) in missingOnSquare) {
-    if (!animatedOrigins.contains(missingPieceSquare)) {
-      fadingPieces[missingPieceSquare] = missingPiece;
-    }
-  }
+
+  
 
   return (translatingPieces, fadingPieces);
 }
@@ -119,7 +126,7 @@ class AnimatedPieceTranslation extends StatefulWidget {
   /// The curve of the animation.
   final Curve curve;
 
-  int get orientationFactor => orientation == Side.white ? 1 : -1;
+  int get orientationFactor => orientation == Side.sente ? 1 : -1;
   double get dx => -(toSquare.file - fromSquare.file).toDouble() * orientationFactor;
   double get dy => (toSquare.rank - fromSquare.rank).toDouble() * orientationFactor;
 
@@ -130,11 +137,7 @@ class AnimatedPieceTranslation extends StatefulWidget {
 class _PieceTranslationState extends State<AnimatedPieceTranslation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller =
-      AnimationController(
-          animationBehavior: AnimationBehavior.preserve,
-          duration: widget.duration,
-          vsync: this,
-        )
+      AnimationController(duration: widget.duration, vsync: this)
         ..addStatusListener((status) {
           if (status == AnimationStatus.completed) {
             widget.onComplete();
@@ -204,11 +207,7 @@ class AnimatedPieceFadeOut extends StatefulWidget {
 
 class _PieceFadeOutState extends State<AnimatedPieceFadeOut> with TickerProviderStateMixin {
   late final AnimationController _controller =
-      AnimationController(
-          animationBehavior: AnimationBehavior.preserve,
-          duration: widget.duration,
-          vsync: this,
-        )
+      AnimationController(duration: widget.duration, vsync: this)
         ..addStatusListener((status) {
           if (status == AnimationStatus.completed) {
             widget.onComplete();

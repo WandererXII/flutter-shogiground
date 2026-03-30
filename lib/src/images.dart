@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 
 import 'widgets/piece.dart';
 
-/// A singleton cache for chess piece images.
+/// A singleton cache for shogi piece images.
 ///
 /// This is useful to avoid using the global flutter image cache and the standard
 /// [Image] widget which can be unpredictable, and can cause images to blink.
@@ -23,7 +23,7 @@ import 'widgets/piece.dart';
 /// final devicePixelRatio = WidgetsBinding
 ///         .instance.platformDispatcher.implicitView?.devicePixelRatio ?? 1.0;
 /// for (final asset in assets.values) {
-///   await ChessgroundImages.instance.load(asset, devicePixelRatio: devicePixelRatio);
+///   await ShogigroundImages.instance.load(asset, devicePixelRatio: devicePixelRatio);
 /// }
 /// ```
 ///
@@ -35,10 +35,10 @@ import 'widgets/piece.dart';
 ///
 /// This is the responsibility of the user to dispose of the cache when it is no
 /// longer needed, or when changing the piece set, using the [clear] method.
-class ChessgroundImages {
-  ChessgroundImages._();
+class ShogigroundImages {
+  ShogigroundImages._();
 
-  static final instance = ChessgroundImages._();
+  static final instance = ShogigroundImages._();
 
   final Map<AssetImage, _ImageEntry> _assets = {};
 
@@ -131,7 +131,7 @@ class ChessgroundImages {
   }
 }
 
-/// Individual entry in the [ChessgroundImages] cache.
+/// Individual entry in the [ShogigroundImages] cache.
 ///
 /// This class owns the [ui.Image] object, which can be disposed of using the
 /// [dispose] method.

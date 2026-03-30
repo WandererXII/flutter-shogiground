@@ -1,4 +1,4 @@
-import 'package:dartchess/dartchess.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
 import 'models.dart';
 
@@ -20,7 +20,7 @@ Pieces readFen(String fen) {
         final square = Square.fromCoords(File(file - 1), Rank(rank));
         final piece = pieces[square];
         if (piece != null) {
-          pieces[square] = piece.copyWith(promoted: true);
+          pieces[square] = piece.copyWith();
         }
       default:
         final code = c.codeUnitAt(0);
@@ -31,7 +31,7 @@ Pieces readFen(String fen) {
           final square = Square.fromCoords(File(file), Rank(rank));
           pieces[square] = Piece(
             role: _roles[roleLetter]!,
-            color: c == roleLetter ? Side.black : Side.white,
+            side: c == roleLetter ? Side.sente : Side.gote,
           );
           ++file;
         }
@@ -54,7 +54,7 @@ String writeFen(Pieces pieces) {
           buffer.write(empty.toString());
           empty = 0;
         }
-        buffer.write(piece.color == Side.white ? piece.role.uppercaseLetter : piece.role.letter);
+        // buffer.write(piece.color == Side.white ? piece.role.uppercaseLetter : piece.role.letter);
       }
 
       if (file == 7) {

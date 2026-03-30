@@ -1,21 +1,22 @@
 import 'dart:math' as math;
-import 'package:chessground/src/widgets/geometry.dart';
-import 'package:dartchess/dartchess.dart';
+import 'package:shogiground/src/widgets/geometry.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
 
 import '../models.dart';
 import 'board.dart';
 import 'positioned_square.dart';
 
-/// A Widget that displays a shape overlay on the [Chessboard].
+/// A Widget that displays a shape overlay on the [Shogiboard].
 ///
 /// Typically used to display arrows, circles, and piece masks on the board.
-class BoardShapeWidget extends StatelessWidget with ChessboardGeometry {
+class BoardShapeWidget extends StatelessWidget with ShogiboardGeometry {
   const BoardShapeWidget({
     super.key,
     required this.shape,
     required this.size,
     required this.orientation,
+    required this.shogiType
   });
 
   /// The shape to display on the board.
@@ -28,6 +29,9 @@ class BoardShapeWidget extends StatelessWidget with ChessboardGeometry {
 
   @override
   final Side orientation;
+
+  @override
+  final ShogiType shogiType;
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +65,12 @@ class BoardShapeWidget extends StatelessWidget with ChessboardGeometry {
         scale: final scale,
       ):
         {
-          final asset = pieceAssets[piece.kind]!;
+          final asset = pieceAssets[piece.role]!;
           return PositionedSquare(
             size: size,
             orientation: orientation,
             square: orig,
+            shogiType: shogiType,
             child: Image.asset(
               asset.assetName,
               bundle: asset.bundle,

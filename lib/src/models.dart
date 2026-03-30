@@ -1,6 +1,83 @@
-import 'package:dartchess/dartchess.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+
+
+// Represents different Shogi variants, mainly distinguished by board size and rules
+enum ShogiType {
+  standard(9, 9),
+  dobutsu(3, 4),
+  chushogi(12, 12),
+  kyotoshogi(5, 5);
+
+  final int width;
+  final int height;
+
+  const ShogiType(this.width, this.height);
+
+  Map<String, int> get size => {
+        'width': width,
+        'height': height,
+      };
+}
+
+// Get Squares for different Shogi Types
+extension ShogiBoardSquares on ShogiType {
+  List<Square> generateSquares() {
+    final squares = <Square>[];
+
+    for (int rank = 1; rank <= height; rank++) {
+      for (int file = 0; file < width; file++) {
+        final index = (rank - 1) * width + file;
+        squares.add(Square(index));
+      }
+    }
+
+    return squares;
+  }
+}
+
+extension ShogiPromotionRules on ShogiType {
+  /// Returns true if a square is inside promotion zone for a given side
+  bool isInPromotionZone(Square square, Side side) {
+    final rank = square.rank;
+
+    switch (this) {
+      /// Standard shogi:
+      /// promotion zone = last 3 ranks of opponent side
+      case ShogiType.standard:
+        return side == Side.sente
+            ? rank >= height - 2
+            : rank <= 3;
+
+      /// Chushogi:
+      /// promotion zone = last 3 ranks of opponent side
+      case ShogiType.chushogi:
+        return side == Side.sente
+            ? rank >= height - 2
+            : rank <= 3;
+
+      /// Dobutsu shogi:
+      /// promotion happens on entering last rank only
+      case ShogiType.dobutsu:
+        return side == Side.sente
+            ? rank == height
+            : rank == 1;
+
+      /// Kyoto shogi:
+      /// Promotion goes after every move
+      case ShogiType.kyotoshogi:
+        return true;
+    }
+  }
+
+  /// Optional helper: check if a move from -> to triggers promotion zone entry
+  bool entersPromotionZone(Square to, Side side) {
+    return isInPromotionZone(to, side);
+  }
+}
+
+
 
 /// The side that can interact with the board.
 enum PlayerSide {
@@ -13,10 +90,10 @@ enum PlayerSide {
   both,
 
   /// Only white side can interact with the board.
-  white,
+  gote,
 
   /// Only black side can interact with the board.
-  black,
+  sente,
 }
 
 /// Game data for an interactive chessboard.
@@ -35,7 +112,6 @@ class GameData {
     this.isCheck,
     this.premovable,
     this.droppable,
-    this.canPromoteToKing = false,
   });
 
   /// Side that is allowed to move.
@@ -52,13 +128,16 @@ class GameData {
   /// Highlight the king of current side to move
   final bool? isCheck;
 
+    /// If `null`, the board will not allow drops.
+  final Droppable? droppable;
+
   /// Set of moves allowed to be played by current side to move.
   final ValidMoves validMoves;
 
   /// Callback called after a move has been made.
   ///
   /// If the move has been made with drag and drop, `viaDragAndDrop` will be true.
-  final void Function(Move, {bool? viaDragAndDrop}) onMove;
+  final void Function(MoveOrDrop, {bool? viaDragAndDrop}) onMove;
 
   /// Callback called after a piece has been selected for promotion.
   ///
@@ -69,14 +148,6 @@ class GameData {
   ///
   /// If `null`, the board will not allow premoves.
   final Premovable? premovable;
-
-  /// Optional droppable state of the board for variants such as Crazyhouse.
-  ///
-  /// If `null`, the board will not allow drops.
-  final Droppable? droppable;
-
-  /// Whether the pawn can be promoted to a king (possible for example in Antichess).
-  final bool canPromoteToKing;
 }
 
 /// State of a premovable chessboard.
@@ -87,15 +158,15 @@ typedef Premovable =
       /// Will be shown on the board as a preview move.
       ///
       /// Chessground will not play the premove automatically, it is up to the library user to play it.
-      Move? premove,
+      MoveOrDrop? premove,
 
       /// Callback called after a premove has been set/unset.
       ///
       /// If `null`, the premove will be unset.
-      void Function(Move?) onSetPremove,
+      void Function(MoveOrDrop?) onSetPremove,
     });
 
-/// State of a droppable chessboard for variants such as Crazyhouse.
+  /// State of a droppable chessboard for variants such as Crazyhouse.
 typedef Droppable =
     ({
       /// Set of squares where the current side to move can drop a piece in variants such as Crazyhouse.
@@ -105,7 +176,7 @@ typedef Droppable =
 /// Describes a set of piece assets.
 ///
 /// The [PieceAssets] must be complete with all the pieces for both sides.
-typedef PieceAssets = IMap<PieceKind, AssetImage>;
+typedef PieceAssets = IMap<Role, AssetImage>;
 
 /// Representation of the piece positions on a board.
 typedef Pieces = Map<Square, Piece>;
@@ -129,7 +200,7 @@ class HighlightDetails {
   final AssetImage? image;
 }
 
-/// A chess move annotation represented by a symbol and a color.
+/// A shogi move annotation represented by a symbol and a color.
 @immutable
 class Annotation {
   const Annotation({required this.symbol, required this.color, this.duration});

@@ -1,25 +1,3 @@
-## 9.0.0
-
-### BREAKING CHANGES
-- `BoardSettings.enableDropMoves` has been removed. Use `GameData.droppable`
-  instead.
-
-- Add `Droppable` to `GameData`. For drop moves, `Chessboard` will now only call `onMove`
-  if and only if `Droppable.validDropSquares` contains the target square.
-  This makes the behavior consistent with normal moves.
-  Note that dropping a pawn on the back rank does not trigger `onMove`, even if `validDropSquares` would allow it.
-
-## 8.2.1
-
-- Fix top player promotion selector when `canPromoteToKing` is true.
-- Preserve the piece animation behaviour even if the system is requesting the
-  animations to be reduced or disabled.
-
-## 8.2.0
-
-- Add `canPromoteToKing` in `GameData` to allow promotion to king in variants
-  like Antichess.
-
 ## 8.1.0
 
 - Add `explosionSquares` to `Chessboard` to show explosion effect on specific
@@ -111,7 +89,7 @@ Fix promotion selection order if player on top promotes
 
 - Added an `onTouchedSquare` callback to `Chessboard`
 - `Chessboard` now supports highlighting arbitrary squares.
-- `StaticChessboard` now supports position change animations.
+- `StaticShogiboard` now supports position change animations.
 
 ## 6.2.3
 
@@ -143,7 +121,7 @@ Fix promotion selection order if player on top promotes
 
 ### Breaking changes:
 - Removed `ChessboardEditorSettings`. The `ChessboardEditor` widget now takes a
-  `ChessboardSettings` object as a parameter.
+  `ShogiboardSettings` object as a parameter.
 
 ### New features:
 - Add a new `border` settings to show a border around the board.
@@ -153,9 +131,9 @@ Fix promotion selection order if player on top promotes
 
 ## 5.3.0
 
-- Added a new `StaticChessboard` widget that is optimized for scrollable
+- Added a new `StaticShogiboard` widget that is optimized for scrollable
   contexts.
-- `SolidColorChessboardBackground` is now implemented with `CustomPaint` to improve
+- `SolidColorShogiboardBackground` is now implemented with `CustomPaint` to improve
   performance when building a lot of boards.
 - Added a new board colorscheme: `ic`.
 
@@ -178,7 +156,7 @@ Fix promotion selection order if player on top promotes
 
 ## 5.0.0
 
-- Added another `Chessboard.fixed` constructor that allows to set the board to a
+- Added another `Shogiboard.fixed` constructor that allows to set the board to a
   fixed position.
 - Premove state is now lifted up to the parent widget, in order to allow
   instant play of premoves.
@@ -195,7 +173,7 @@ Fix promotion selection order if player on top promotes
   of `BoardData`.
 - Added required parameters `piece` and `pieceAssets` to `PieceShape`, removed `role`. Added optional
   `opacity` parameter.
-- Remove 'ChessboardState.opponentsPiecesUpsideDown' in favor of `ChessboardSettings.pieceOrientationBehavior`.
+- Remove 'ChessboardState.opponentsPiecesUpsideDown' in favor of `ShogiboardSettings.pieceOrientationBehavior`.
 
 ## 4.0.0
 

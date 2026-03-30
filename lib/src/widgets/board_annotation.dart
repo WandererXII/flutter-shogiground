@@ -1,18 +1,19 @@
 import 'dart:async';
-import 'package:chessground/src/widgets/geometry.dart';
-import 'package:dartchess/dartchess.dart';
+import 'package:shogiground/src/widgets/geometry.dart';
+import 'package:dartshogi/dartshogi.dart';
 import 'package:flutter/widgets.dart';
 import '../models.dart';
 
 /// A widget that displays an annotation of a square on the board.
 ///
 /// This is typically used to display move annotations, such as "!!" or "??".
-class BoardAnnotation extends StatefulWidget with ChessboardGeometry {
-  const BoardAnnotation({
+class BoardAnnotation extends StatefulWidget with ShogiboardGeometry {
+  BoardAnnotation({
     required this.annotation,
     required this.size,
     required this.orientation,
     required this.square,
+    required this.shogiType,
     super.key,
   });
 
@@ -25,6 +26,8 @@ class BoardAnnotation extends StatefulWidget with ChessboardGeometry {
   final Side orientation;
 
   final Square square;
+
+  final ShogiType shogiType;
 
   @override
   State<BoardAnnotation> createState() => _BoardAnnotationState();
@@ -64,9 +67,9 @@ class _BoardAnnotationState extends State<BoardAnnotation> {
     final squareOffset = widget.squareOffset(widget.square);
     final size = widget.squareSize * 0.48;
     final onRightEdge =
-        widget.orientation == Side.white
-            ? widget.square.file == File.h
-            : widget.square.file == File.a;
+        widget.orientation == Side.sente
+            ? widget.square.file == File.file15
+            : widget.square.file == File.file1;
     final offset = squareOffset.translate(
       onRightEdge ? widget.squareSize - (size * 0.9) : widget.squareSize - (size * 0.7),
       -(size * 0.3),

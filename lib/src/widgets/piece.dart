@@ -1,9 +1,9 @@
-import 'package:dartchess/dartchess.dart' show Piece;
+import 'package:dartshogi/dartshogi.dart' show Piece;
 import 'package:flutter/widgets.dart';
 import '../models.dart';
 import '../images.dart';
 
-/// Widget that displays a chess piece.
+/// Widget that displays a shogi piece.
 class PieceWidget extends StatelessWidget {
   const PieceWidget({
     super.key,
@@ -34,7 +34,7 @@ class PieceWidget extends StatelessWidget {
   final Animation<double>? opacity;
 
   /// [AssetImage] provider for the piece.
-  AssetImage get imageProvider => pieceAssets[piece.kind]!;
+  AssetImage get imageProvider => pieceAssets[piece.role]!;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class PieceWidget extends StatelessWidget {
       return SizedBox(width: size, height: size);
     }
 
-    final fromCache = ChessgroundImages.instance.get(imageProvider);
+    final fromCache = ShogigroundImages.instance.get(imageProvider);
 
     final image =
         fromCache != null
